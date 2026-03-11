@@ -57,15 +57,36 @@ const ColorExtract = (() => {
 
   // Apply extracted color as CSS custom properties on the document
   function applyTheme(color) {
-    document.documentElement.style.setProperty('--mic-bg', color.hex);
-    document.documentElement.style.setProperty('--accent', color.hex);
+    const root = document.documentElement;
+    root.style.setProperty('--mic-bg', color.hex);
+    root.style.setProperty('--accent', color.hex);
+
     // Slightly darker version for hover states
     const darker = {
       r: Math.max(0, color.r - 30),
       g: Math.max(0, color.g - 30),
       b: Math.max(0, color.b - 30),
     };
-    document.documentElement.style.setProperty('--mic-bg-hover', rgbToHex(darker.r, darker.g, darker.b));
+    root.style.setProperty('--mic-bg-hover', rgbToHex(darker.r, darker.g, darker.b));
+
+    // Tinted background — very light wash of the accent color
+    const isDark = document.body.classList.contains('dark-mode');
+    if (isDark) {
+      // Dark mode: dark tinted background
+      const dr = Math.round(color.r * 0.08);
+      const dg = Math.round(color.g * 0.08);
+      const db = Math.round(color.b * 0.08);
+      root.style.setProperty('--bg', rgbToHex(dr + 20, dg + 20, db + 24));
+      root.style.setProperty('--bg-card', rgbToHex(dr + 28, dg + 28, db + 36));
+    } else {
+      // Light mode: very subtle tint
+      const lr = Math.min(255, Math.round(245 + color.r * 0.04));
+      const lg = Math.min(255, Math.round(245 + color.g * 0.04));
+      const lb = Math.min(255, Math.round(245 + color.b * 0.04));
+      root.style.setProperty('--bg', rgbToHex(lr, lg, lb));
+      // Cards stay white for contrast
+      root.style.setProperty('--bg-card', '#ffffff');
+    }
   }
 
   // Full pipeline: extract from logo and apply

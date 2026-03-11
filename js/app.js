@@ -157,11 +157,13 @@
       card.style.borderLeftColor = result.level.accentColor;
       let progressHTML = '';
       if (result.progress !== undefined) {
+        const minsLeft = result.minutesRemaining;
+        const timeLeftText = minsLeft === 1 ? '1 minute left' : `${minsLeft} minutes left`;
         progressHTML = `
           <div class="card-progress">
             <div class="card-progress-fill" style="width: ${result.progress}%; background: ${result.level.accentColor}"></div>
           </div>
-          <div class="card-context">${result.progress}% through this period</div>
+          <div class="card-context">${timeLeftText}</div>
         `;
       }
       card.innerHTML = `
@@ -186,7 +188,9 @@
       return `${result.period} at ${result.level.name} is from ${result.startFormatted} to ${result.endFormatted}.`;
     }
     if (parsed.type === 'now-to-period') {
-      return `It's currently ${result.period} at ${result.level.name}, from ${result.startFormatted} to ${result.endFormatted}. ${result.progress}% through.`;
+      const minsLeft = result.minutesRemaining;
+      const timeLeftSpoken = minsLeft === 1 ? '1 minute left' : `${minsLeft} minutes left`;
+      return `It's currently ${result.period} at ${result.level.name}, from ${result.startFormatted} to ${result.endFormatted}. ${timeLeftSpoken}.`;
     }
     if (parsed.type === 'time-to-period') {
       return `At that time it's ${result.period} at ${result.level.name}, from ${result.startFormatted} to ${result.endFormatted}.`;

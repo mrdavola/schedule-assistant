@@ -52,10 +52,11 @@ const ScheduleEngine = (() => {
       const endMins = toMinutes(end);
       if (nowMins >= startMins && nowMins < endMins) {
         const progress = (nowMins - startMins) / (endMins - startMins);
+        const minutesRemaining = endMins - nowMins;
         return {
           period: periodKey, start, end,
           startFormatted: formatTime(start), endFormatted: formatTime(end),
-          level, progress: Math.round(progress * 100)
+          level, progress: Math.round(progress * 100), minutesRemaining
         };
       }
     }
