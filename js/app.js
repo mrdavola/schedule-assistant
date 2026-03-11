@@ -74,7 +74,7 @@
 
   // --- Settings button ---
   document.getElementById('settings-btn').addEventListener('click', () => {
-    window.location.href = 'settings.html';
+    window.location.href = 'settings';
   });
 
   // --- Query handler ---

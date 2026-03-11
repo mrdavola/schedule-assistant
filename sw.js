@@ -2,7 +2,7 @@ const CACHE_NAME = 'schedule-v2';
 const ASSETS = [
   '/',
   '/index.html',
-  '/settings.html',
+  '/settings',
   '/css/style.css',
   '/css/settings.css',
   '/js/app.js',

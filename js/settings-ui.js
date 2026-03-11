@@ -2,7 +2,7 @@
   let config = await Config.get();
 
   document.getElementById('back-btn').addEventListener('click', () => {
-    window.location.href = 'index.html';
+    window.location.href = '/';
   });
 
   if (config.darkMode) document.body.classList.add('dark-mode');
