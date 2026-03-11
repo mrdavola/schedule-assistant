@@ -8,6 +8,15 @@
   if (config.districtLogo) {
     districtLogoEl.src = config.districtLogo;
     districtLogoEl.classList.remove('hidden');
+    // Use saved theme color if available, otherwise extract from logo
+    if (config.themeColor) {
+      const r = parseInt(config.themeColor.slice(1, 3), 16);
+      const g = parseInt(config.themeColor.slice(3, 5), 16);
+      const b = parseInt(config.themeColor.slice(5, 7), 16);
+      ColorExtract.applyTheme({ r, g, b, hex: config.themeColor });
+    } else {
+      ColorExtract.applyFromLogo(config.districtLogo);
+    }
   }
   if (config.darkMode) {
     document.body.classList.add('dark-mode');

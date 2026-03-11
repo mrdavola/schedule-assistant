@@ -1,4 +1,4 @@
-const CACHE_NAME = 'schedule-v2';
+const CACHE_NAME = 'schedule-v3';
 const ASSETS = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   '/css/settings.css',
   '/js/app.js',
   '/js/config.js',
+  '/js/color-extract.js',
   '/js/schedule-engine.js',
   '/js/voice-parser.js',
   '/js/speech.js',

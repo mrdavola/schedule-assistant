@@ -25,10 +25,13 @@
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       config.districtLogo = ev.target.result;
+      const color = await ColorExtract.fromImage(ev.target.result);
+      config.themeColor = color.hex;
       Config.save(config);
-      logoPreview.innerHTML = `<img src="${ev.target.result}" alt="Logo">`;
+      ColorExtract.applyTheme(color);
+      logoPreview.innerHTML = `<img src="${ev.target.result}" alt="Logo"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${color.hex};margin-left:8px;vertical-align:middle;"></span>`;
     };
     reader.readAsDataURL(file);
   });

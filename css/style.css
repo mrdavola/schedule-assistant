@@ -201,7 +201,7 @@ main {
 }
 
 .type-input:focus {
-  border-color: var(--mic-bg);
+  border-color: var(--accent, var(--mic-bg));
 }
 
 .type-submit {
