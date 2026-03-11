@@ -2,12 +2,11 @@ const Speech = (() => {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const synth = window.speechSynthesis;
 
-  const MAX_LISTEN_MS = 10000;       // Hard stop after 10 seconds of total listening
-  const SILENCE_AFTER_SPEECH_MS = 1500; // Wait 1.5s of silence after last word before accepting
+  const SILENCE_AFTER_SPEECH_MS = 1500; // Accept result 1.5s after last speech
 
   let recognition = null;
   let isListening = false;
-  let timeoutId = null;
+  let _stopReject = null;
 
   function isSupported() { return !!SpeechRecognition; }
   function isSynthSupported() { return !!synth; }
@@ -21,7 +20,6 @@ const Speech = (() => {
         try { recognition.abort(); } catch (e) {}
         recognition = null;
       }
-      clearTimeout(timeoutId);
       isListening = true;
 
       recognition = new SpeechRecognition();
@@ -33,45 +31,29 @@ const Speech = (() => {
       let settled = false;
       let finalTranscript = '';
       let silenceTimer = null;
-      let hasHeardSpeech = false;
+
+      // Store reject so stop() can trigger it
+      _stopReject = reject;
 
       function settle() {
         settled = true;
         isListening = false;
-        clearTimeout(timeoutId);
+        _stopReject = null;
         clearTimeout(silenceTimer);
       }
 
-      // Hard timeout — no matter what, stop after MAX_LISTEN_MS
-      timeoutId = setTimeout(() => {
-        if (!settled) {
-          settle();
-          try { recognition.stop(); } catch (e) {}
-          recognition = null;
-          if (finalTranscript.trim()) {
-            resolve(finalTranscript.trim());
-          } else {
-            reject(new Error('Listening timed out. Tap to try again.'));
-          }
-        }
-      }, MAX_LISTEN_MS);
-
       recognition.onresult = (event) => {
         if (settled) return;
-        hasHeardSpeech = true;
 
         // Build transcript from all results
-        let interim = '';
         finalTranscript = '';
         for (let i = 0; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript;
-          } else {
-            interim += event.results[i][0].transcript;
           }
         }
 
-        // If we have a final result, wait a beat for more speech, then resolve
+        // Once we have a final result, wait for silence then resolve
         if (finalTranscript.trim()) {
           clearTimeout(silenceTimer);
           silenceTimer = setTimeout(() => {
@@ -87,30 +69,40 @@ const Speech = (() => {
 
       recognition.onerror = (event) => {
         if (settled) return;
-        // On "no-speech", if we have partial transcript, use it
-        if (event.error === 'no-speech' && finalTranscript.trim()) {
-          settle();
-          recognition = null;
-          resolve(finalTranscript.trim());
+        // "no-speech" on iOS fires when silence is detected — keep listening
+        // Only stop on real errors
+        if (event.error === 'no-speech') {
+          // If we already have speech, use it
+          if (finalTranscript.trim()) {
+            settle();
+            recognition = null;
+            resolve(finalTranscript.trim());
+          }
+          // Otherwise keep listening — don't reject
           return;
         }
         settle();
         recognition = null;
-        if (event.error === 'no-speech') reject(new Error('No speech detected. Please try again.'));
-        else if (event.error === 'not-allowed') reject(new Error('Microphone access denied. Please allow microphone access.'));
+        if (event.error === 'not-allowed') reject(new Error('Microphone access denied. Please allow microphone access.'));
         else if (event.error === 'aborted') reject(new Error('Stopped listening.'));
         else reject(new Error(`Speech error: ${event.error}`));
       };
 
       recognition.onend = () => {
-        // In continuous mode, onend fires when recognition stops
         if (!settled) {
-          settle();
-          recognition = null;
+          // Continuous mode ended unexpectedly (iOS sometimes does this)
+          // If we have transcript, use it. Otherwise restart.
           if (finalTranscript.trim()) {
+            settle();
+            recognition = null;
             resolve(finalTranscript.trim());
-          } else {
-            reject(new Error('No speech detected. Tap to try again.'));
+          } else if (isListening) {
+            // Restart listening — iOS Safari stops continuous mode after silence
+            try { recognition.start(); } catch (e) {
+              settle();
+              recognition = null;
+              reject(new Error('No speech detected. Tap to try again.'));
+            }
           }
         }
       };
@@ -120,8 +112,8 @@ const Speech = (() => {
   }
 
   function stop() {
-    clearTimeout(timeoutId);
     isListening = false;
+    clearTimeout();
     if (recognition) {
       recognition.onresult = null;
       recognition.onerror = null;
@@ -131,6 +123,10 @@ const Speech = (() => {
       recognition = null;
     }
     if (synth) { synth.cancel(); }
+    if (_stopReject) {
+      _stopReject(new Error('Stopped listening.'));
+      _stopReject = null;
+    }
   }
 
   // Release mic when page is hidden (tab switch, lock screen, app switch)

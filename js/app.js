@@ -28,29 +28,45 @@
   const waveform = document.querySelector('.mic-waveform');
   const cardsArea = document.getElementById('cards');
 
+  let micActive = false;
+
+  function resetMicUI() {
+    micActive = false;
+    micBtn.classList.remove('listening');
+    waveform.classList.add('hidden');
+    micStatus.textContent = 'Tap to ask a question';
+  }
+
   micBtn.addEventListener('click', async () => {
     if (!Speech.isSupported()) {
       micStatus.textContent = 'Voice not supported — try typing instead';
       return;
     }
 
+    // If already listening, tap again to stop
+    if (micActive) {
+      Speech.stop();
+      resetMicUI();
+      return;
+    }
+
+    micActive = true;
     micBtn.classList.add('listening');
     waveform.classList.remove('hidden');
     micStatus.textContent = 'Listening...';
 
     try {
       const transcript = await Speech.listen();
-      micBtn.classList.remove('listening');
-      waveform.classList.add('hidden');
-      micStatus.textContent = 'Tap to ask a question';
+      resetMicUI();
       handleQuery(transcript);
     } catch (err) {
-      micBtn.classList.remove('listening');
-      waveform.classList.add('hidden');
-      micStatus.textContent = err.message || 'Please try again';
-      setTimeout(() => {
-        micStatus.textContent = 'Tap to ask a question';
-      }, 3000);
+      resetMicUI();
+      if (err.message !== 'Stopped listening.') {
+        micStatus.textContent = err.message || 'Please try again';
+        setTimeout(() => {
+          micStatus.textContent = 'Tap to ask a question';
+        }, 3000);
+      }
     }
   });
 
