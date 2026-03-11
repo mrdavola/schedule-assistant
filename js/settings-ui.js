@@ -31,9 +31,34 @@
       config.themeColor = color.hex;
       Config.save(config);
       ColorExtract.applyTheme(color);
-      logoPreview.innerHTML = `<img src="${ev.target.result}" alt="Logo"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${color.hex};margin-left:8px;vertical-align:middle;"></span>`;
+      themeColorInput.value = color.hex;
+      themeColorHex.textContent = color.hex;
+      logoPreview.innerHTML = `<img src="${ev.target.result}" alt="Logo">`;
     };
     reader.readAsDataURL(file);
+  });
+
+  // --- Theme color picker ---
+  const themeColorInput = document.getElementById('theme-color-input');
+  const themeColorHex = document.getElementById('theme-color-hex');
+  themeColorInput.value = config.themeColor || '#007AFF';
+  themeColorHex.textContent = config.themeColor || '#007AFF';
+  if (config.themeColor) {
+    const r = parseInt(config.themeColor.slice(1, 3), 16);
+    const g = parseInt(config.themeColor.slice(3, 5), 16);
+    const b = parseInt(config.themeColor.slice(5, 7), 16);
+    ColorExtract.applyTheme({ r, g, b, hex: config.themeColor });
+  }
+
+  themeColorInput.addEventListener('input', () => {
+    const hex = themeColorInput.value;
+    themeColorHex.textContent = hex;
+    config.themeColor = hex;
+    Config.save(config);
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    ColorExtract.applyTheme({ r, g, b, hex });
   });
 
   const voiceToggle = document.getElementById('voice-toggle');
