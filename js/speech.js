@@ -39,8 +39,20 @@ const Speech = (() => {
   }
 
   function stop() {
-    if (recognition && isListening) { recognition.stop(); isListening = false; }
+    if (recognition) {
+      try { recognition.abort(); } catch (e) {}
+      recognition = null;
+      isListening = false;
+    }
+    if (synth) { synth.cancel(); }
   }
+
+  // Release mic when user leaves, switches tabs, or locks phone
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop();
+  });
+  window.addEventListener('pagehide', stop);
+  window.addEventListener('beforeunload', stop);
 
   function speak(text) {
     return new Promise((resolve) => {
