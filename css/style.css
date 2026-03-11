@@ -305,3 +305,61 @@ body.dark-mode .card-progress {
   margin-bottom: 8px;
   opacity: 0.7;
 }
+
+/* All-schools card */
+.all-schools-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 12px var(--shadow);
+  animation: slideUp 0.3s ease-out;
+  transition: opacity 0.3s;
+}
+
+.all-schools-card.faded {
+  opacity: 0.4;
+}
+
+.asc-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.asc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 12px 14px;
+  border-left: 4px solid #ccc;
+  margin-bottom: 8px;
+}
+
+.asc-school {
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 90px;
+}
+
+.asc-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+
+.asc-period {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.asc-time {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.asc-detail {
+  font-size: 12px;
+  color: var(--text-secondary);
+}

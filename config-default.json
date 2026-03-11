@@ -26,7 +26,7 @@
       "id": "elementary",
       "name": "Elementary",
       "accentColor": "#FF9800",
-      "aliases": ["Stratford", "Stratford Avenue School", "Stratford School", "Stewart", "Stewart School", "elementary"],
+      "aliases": ["Stratford", "Stratford Avenue School", "Stratford School", "Stewart", "Stewart School", "Stuart", "Stuart School", "elementary"],
       "schedule": {
         "Period 1": ["07:58", "08:38"],
         "Period 2": ["08:38", "09:18"],

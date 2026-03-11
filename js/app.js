@@ -98,8 +98,41 @@
   // --- Query handler ---
   function handleQuery(text) {
     const parsed = VoiceParser.parse(text, config);
-    let result;
 
+    // All-schools queries get special rendering
+    if (parsed.type === 'now-all-schools') {
+      const results = config.levels.map(level =>
+        ScheduleEngine.getCurrentPeriod(config, level.name)
+      );
+      renderAllSchoolsCard(text, results);
+      if (config.voiceResponseEnabled) {
+        const spoken = results.map(r => {
+          if (r.error) return '';
+          if (r.outsideSchedule) return `${r.level.name}: not in session.`;
+          if (r.between) return `${r.level.name}: between periods.`;
+          return `${r.level.name}: ${r.period}, ${r.minutesRemaining} minutes left.`;
+        }).filter(Boolean).join(' ');
+        if (spoken) Speech.speak(spoken);
+      }
+      return;
+    }
+
+    if (parsed.type === 'period-all-schools') {
+      const results = config.levels.map(level =>
+        ScheduleEngine.getPeriodTime(config, level.name, parsed.period)
+      );
+      renderAllSchoolsPeriodCard(text, parsed.period, results);
+      if (config.voiceResponseEnabled) {
+        const spoken = results.map(r => {
+          if (r.error) return '';
+          return `${r.level.name}: ${r.startFormatted} to ${r.endFormatted}.`;
+        }).filter(Boolean).join(' ');
+        if (spoken) Speech.speak(`Period ${parsed.period}. ${spoken}`);
+      }
+      return;
+    }
+
+    let result;
     switch (parsed.type) {
       case 'period-to-time':
         result = ScheduleEngine.getPeriodTime(config, parsed.school, parsed.period);
@@ -120,6 +153,47 @@
       const spokenText = buildSpokenResponse(parsed, result);
       if (spokenText) Speech.speak(spokenText);
     }
+  }
+
+  // --- All-schools "now" card ---
+  function renderAllSchoolsCard(query, results) {
+    cardsArea.querySelectorAll('.answer-card, .all-schools-card').forEach(c => c.classList.add('faded'));
+    const card = document.createElement('div');
+    card.className = 'all-schools-card';
+
+    const rows = results.map(r => {
+      const color = r.level ? r.level.accentColor : '#ccc';
+      let content;
+      if (r.outsideSchedule) {
+        content = `<span class="asc-period">Not in session</span>`;
+      } else if (r.between) {
+        content = `<span class="asc-period">Between periods</span><span class="asc-detail">Next: ${escapeHtml(r.nextPeriod)} at ${escapeHtml(r.nextStartFormatted)}</span>`;
+      } else {
+        const minsLeft = r.minutesRemaining;
+        const timeLeft = minsLeft === 1 ? '1 min left' : `${minsLeft} min left`;
+        content = `<span class="asc-period">${escapeHtml(r.period)}</span><span class="asc-time">${escapeHtml(r.startFormatted)} – ${escapeHtml(r.endFormatted)}</span><span class="asc-detail">${timeLeft}</span>`;
+      }
+      return `<div class="asc-row" style="border-left-color:${color}"><div class="asc-school">${escapeHtml(r.level.name)}</div><div class="asc-info">${content}</div></div>`;
+    }).join('');
+
+    card.innerHTML = `<div class="card-query">"${escapeHtml(query)}"</div><div class="asc-title">Right Now</div>${rows}`;
+    cardsArea.prepend(card);
+  }
+
+  // --- All-schools period time card ---
+  function renderAllSchoolsPeriodCard(query, periodNum, results) {
+    cardsArea.querySelectorAll('.answer-card, .all-schools-card').forEach(c => c.classList.add('faded'));
+    const card = document.createElement('div');
+    card.className = 'all-schools-card';
+
+    const rows = results.map(r => {
+      if (r.error) return '';
+      const color = r.level.accentColor;
+      return `<div class="asc-row" style="border-left-color:${color}"><div class="asc-school">${escapeHtml(r.level.name)}</div><div class="asc-info"><span class="asc-time">${escapeHtml(r.startFormatted)} – ${escapeHtml(r.endFormatted)}</span></div></div>`;
+    }).filter(Boolean).join('');
+
+    card.innerHTML = `<div class="card-query">"${escapeHtml(query)}"</div><div class="asc-title">Period ${periodNum}</div>${rows}`;
+    cardsArea.prepend(card);
   }
 
   // --- Card rendering ---
