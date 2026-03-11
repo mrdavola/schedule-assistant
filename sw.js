@@ -1,4 +1,4 @@
-const CACHE_NAME = 'schedule-v1';
+const CACHE_NAME = 'schedule-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -17,14 +17,29 @@ const ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return Promise.allSettled(
+        ASSETS.map((url) =>
+          fetch(url, { redirect: 'follow' })
+            .then((response) => {
+              if (response.ok) {
+                return cache.put(url, response);
+              }
+            })
+            .catch(() => {})
+        )
+      );
+    })
   );
 });
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request);
+      if (cached) return cached;
+      return fetch(event.request, { redirect: 'follow' }).then((response) => {
+        return response;
+      });
     })
   );
 });

@@ -13,7 +13,7 @@
 
 ### Action 2: Open URL
 - Action: **Open URLs**
-- URL: `https://YOUR-VERCEL-URL.vercel.app/?q=[Provided Input]`
+- URL: `https://schedule-assistant-seven.vercel.app/?q=[Provided Input]`
   - Replace `[Provided Input]` with the variable from Step 1
 
 4. Tap the shortcut name at the top and **Rename** to "School Schedule"
@@ -34,6 +34,6 @@ For a fully voice-in/voice-out experience without opening the browser:
 
 1. Create a new shortcut
 2. **Dictate Text** action (captures your voice)
-3. **Get Contents of URL**: `https://YOUR-VERCEL-URL.vercel.app/api/query?q=[Dictated Text]`
+3. **Get Contents of URL**: `https://schedule-assistant-seven.vercel.app/api/query?q=[Dictated Text]`
    (This requires a simple API endpoint — future enhancement)
 4. **Speak Text** action with the result
