@@ -1,0 +1,80 @@
+{
+  "districtName": "Garden City",
+  "districtLogo": null,
+  "voiceResponseEnabled": true,
+  "darkMode": false,
+  "levels": [
+    {
+      "id": "primary",
+      "name": "Primary",
+      "accentColor": "#4CAF50",
+      "aliases": ["Locust", "Hemlock", "Homestead", "Locust School", "Hemlock School", "Homestead School", "primary"],
+      "schedule": {
+        "Period 1": ["08:15", "09:00"],
+        "Period 2": ["09:00", "09:40"],
+        "Period 3": ["09:40", "10:20"],
+        "Period 4": ["10:20", "11:00"],
+        "Period 5": ["11:00", "11:40"],
+        "Period 6": ["11:45", "12:35"],
+        "Period 7": ["12:40", "13:30"],
+        "Period 8": ["13:00", "13:40"],
+        "Period 9": ["13:40", "14:20"],
+        "Period 10": ["14:20", "15:00"]
+      }
+    },
+    {
+      "id": "elementary",
+      "name": "Elementary",
+      "accentColor": "#FF9800",
+      "aliases": ["Stratford", "Stratford Avenue School", "Stratford School", "Stewart", "Stewart School", "elementary"],
+      "schedule": {
+        "Period 1": ["07:58", "08:38"],
+        "Period 2": ["08:38", "09:18"],
+        "Period 3": ["09:21", "10:01"],
+        "Period 4": ["10:04", "10:44"],
+        "Period 5": ["10:47", "11:23"],
+        "Period 6": ["11:26", "12:16"],
+        "Period 7": ["12:20", "13:10"],
+        "Period 8": ["13:13", "13:53"],
+        "Period 9": ["13:56", "14:36"],
+        "Period 10": ["14:40", "14:55"]
+      }
+    },
+    {
+      "id": "middle",
+      "name": "Middle School",
+      "accentColor": "#2196F3",
+      "aliases": ["Garden City Middle School", "GCMS", "the middle school", "middle school", "middle"],
+      "schedule": {
+        "Period 1": ["08:29", "09:15"],
+        "Period 2": ["09:19", "10:00"],
+        "Period 3": ["10:04", "10:45"],
+        "Period 4": ["10:49", "11:30"],
+        "Period 5": ["11:34", "12:15"],
+        "Period 6": ["12:19", "13:00"],
+        "Period 7": ["13:04", "13:45"],
+        "Period 8": ["13:49", "14:30"],
+        "Period 9": ["14:34", "15:17"],
+        "Period 10": ["15:20", "15:30"]
+      }
+    },
+    {
+      "id": "high",
+      "name": "High School",
+      "accentColor": "#F44336",
+      "aliases": ["Garden City High School", "GCHS", "the high school", "high school", "high"],
+      "schedule": {
+        "Period 1": ["07:40", "08:27"],
+        "Period 2": ["08:32", "09:14"],
+        "Period 3": ["09:19", "10:01"],
+        "Period 4": ["10:06", "10:48"],
+        "Period 5": ["10:53", "11:35"],
+        "Period 6": ["11:40", "12:22"],
+        "Period 7": ["12:27", "13:09"],
+        "Period 8": ["13:14", "13:56"],
+        "Period 9": ["14:01", "14:43"],
+        "Period 10": ["14:43", "14:55"]
+      }
+    }
+  ]
+}
