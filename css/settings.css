@@ -1,0 +1,259 @@
+.settings-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 40px;
+}
+
+.settings-section {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.settings-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.setting-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.setting-field span {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.setting-field input[type="text"],
+.setting-field input[type="time"] {
+  padding: 10px 14px;
+  font-size: 15px;
+  font-family: 'Lexend', sans-serif;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+.setting-field input:focus {
+  border-color: #007AFF;
+}
+
+.setting-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.setting-toggle span:first-child {
+  font-size: 15px;
+}
+
+.setting-toggle input {
+  display: none;
+}
+
+.toggle-slider {
+  width: 50px;
+  height: 28px;
+  background: #ccc;
+  border-radius: 14px;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s;
+}
+
+.setting-toggle input:checked + .toggle-slider {
+  background: #007AFF;
+}
+
+.setting-toggle input:checked + .toggle-slider::after {
+  transform: translateX(22px);
+}
+
+.btn-secondary {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-family: 'Lexend', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-danger {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-family: 'Lexend', sans-serif;
+  background: #FF3B30;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn-file {
+  display: inline-block;
+  text-align: center;
+}
+
+.level-card {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-left: 4px solid #ccc;
+}
+
+.level-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.level-header h3 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.level-body {
+  display: none;
+}
+
+.level-body.expanded {
+  display: block;
+}
+
+.level-delete {
+  background: none;
+  border: none;
+  color: #FF3B30;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'Lexend', sans-serif;
+}
+
+.alias-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.alias-tag {
+  background: var(--bg-card);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.alias-tag button {
+  background: none;
+  border: none;
+  color: #FF3B30;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.alias-add {
+  display: flex;
+  gap: 6px;
+}
+
+.alias-add input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: 'Lexend', sans-serif;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text);
+}
+
+.alias-add button {
+  padding: 6px 12px;
+  font-size: 13px;
+  background: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.schedule-table {
+  width: 100%;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.schedule-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.schedule-row input {
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: 'Lexend', sans-serif;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text);
+}
+
+.schedule-row input[type="time"] {
+  width: 110px;
+}
+
+.schedule-row .period-name {
+  flex: 1;
+  min-width: 80px;
+}
+
+#logo-preview-area img {
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
