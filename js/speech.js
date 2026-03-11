@@ -2,7 +2,8 @@ const Speech = (() => {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const synth = window.speechSynthesis;
 
-  const MAX_LISTEN_MS = 10000; // Auto-stop after 10 seconds
+  const MAX_LISTEN_MS = 10000;       // Hard stop after 10 seconds of total listening
+  const SILENCE_AFTER_SPEECH_MS = 1500; // Wait 1.5s of silence after last word before accepting
 
   let recognition = null;
   let isListening = false;
@@ -15,7 +16,7 @@ const Speech = (() => {
     return new Promise((resolve, reject) => {
       if (!isSupported()) { reject(new Error('Speech recognition not supported in this browser.')); return; }
 
-      // If already listening, clean up first
+      // Clean up any previous session
       if (recognition) {
         try { recognition.abort(); } catch (e) {}
         recognition = null;
@@ -25,34 +26,74 @@ const Speech = (() => {
 
       recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
-      recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.continuous = true;
+      recognition.interimResults = true;
       recognition.maxAlternatives = 1;
 
       let settled = false;
-      function settle() { settled = true; isListening = false; clearTimeout(timeoutId); }
+      let finalTranscript = '';
+      let silenceTimer = null;
+      let hasHeardSpeech = false;
 
-      // Auto-timeout
+      function settle() {
+        settled = true;
+        isListening = false;
+        clearTimeout(timeoutId);
+        clearTimeout(silenceTimer);
+      }
+
+      // Hard timeout — no matter what, stop after MAX_LISTEN_MS
       timeoutId = setTimeout(() => {
         if (!settled) {
           settle();
-          try { recognition.abort(); } catch (e) {}
+          try { recognition.stop(); } catch (e) {}
           recognition = null;
-          reject(new Error('Listening timed out. Tap to try again.'));
+          if (finalTranscript.trim()) {
+            resolve(finalTranscript.trim());
+          } else {
+            reject(new Error('Listening timed out. Tap to try again.'));
+          }
         }
       }, MAX_LISTEN_MS);
 
       recognition.onresult = (event) => {
         if (settled) return;
-        settle();
-        const transcript = event.results[0][0].transcript;
-        try { recognition.stop(); } catch (e) {}
-        recognition = null;
-        resolve(transcript);
+        hasHeardSpeech = true;
+
+        // Build transcript from all results
+        let interim = '';
+        finalTranscript = '';
+        for (let i = 0; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+
+        // If we have a final result, wait a beat for more speech, then resolve
+        if (finalTranscript.trim()) {
+          clearTimeout(silenceTimer);
+          silenceTimer = setTimeout(() => {
+            if (!settled) {
+              settle();
+              try { recognition.stop(); } catch (e) {}
+              recognition = null;
+              resolve(finalTranscript.trim());
+            }
+          }, SILENCE_AFTER_SPEECH_MS);
+        }
       };
 
       recognition.onerror = (event) => {
         if (settled) return;
+        // On "no-speech", if we have partial transcript, use it
+        if (event.error === 'no-speech' && finalTranscript.trim()) {
+          settle();
+          recognition = null;
+          resolve(finalTranscript.trim());
+          return;
+        }
         settle();
         recognition = null;
         if (event.error === 'no-speech') reject(new Error('No speech detected. Please try again.'));
@@ -62,11 +103,15 @@ const Speech = (() => {
       };
 
       recognition.onend = () => {
-        // If onend fires without result or error (e.g. silence), reject
+        // In continuous mode, onend fires when recognition stops
         if (!settled) {
           settle();
           recognition = null;
-          reject(new Error('No speech detected. Tap to try again.'));
+          if (finalTranscript.trim()) {
+            resolve(finalTranscript.trim());
+          } else {
+            reject(new Error('No speech detected. Tap to try again.'));
+          }
         }
       };
 
@@ -89,7 +134,6 @@ const Speech = (() => {
   }
 
   // Release mic when page is hidden (tab switch, lock screen, app switch)
-  // NOT on blur — blur fires on iOS when mic permission dialog shows
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stop();
   });
