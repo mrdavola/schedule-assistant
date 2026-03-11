@@ -16,7 +16,7 @@
   // --- Mic button ---
   const micBtn = document.getElementById('mic-btn');
   const micStatus = document.getElementById('mic-status');
-  const waveform = micBtn.querySelector('.mic-waveform');
+  const waveform = document.querySelector('.mic-waveform');
   const cardsArea = document.getElementById('cards');
 
   micBtn.addEventListener('click', async () => {
@@ -69,6 +69,15 @@
   typeInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       typeSubmit.click();
+    }
+  });
+
+  // --- Reset mic UI when page becomes visible again (in case force-stopped) ---
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      micBtn.classList.remove('listening');
+      waveform.classList.add('hidden');
+      micStatus.textContent = 'Tap to ask a question';
     }
   });
 
